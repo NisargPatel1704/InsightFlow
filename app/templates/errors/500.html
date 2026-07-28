@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>500 — {{ app_name }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="empty-state" style="padding-top:120px;">
+  <h1 style="font-size:64px;margin:0;color:var(--color-warning);font-family:var(--font-mono);">500</h1>
+  <h4>Something went wrong</h4>
+  <p>An unexpected error occurred. Please try again in a moment.</p>
+  <a href="/" class="btn btn-primary" style="margin-top:16px;display:inline-flex;">Go home</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Inventory{% endblock %}
+{% block page_header_title %}Inventory{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Inventory</h1>
+    <p class="page-subtitle">Track stock levels across {{ products | length }} products.</p>
+  </div>
+</div>
+
+<div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr);">
+  <div class="kpi-card">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Total Inventory Value</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+    </div>
+    <span class="kpi-value" title="{{ total_value | currency }} exact">{{ total_value | compact_currency }}</span>
+  </div>
+  <div class="kpi-card {{ 'negative-trend' if low_stock_count > 0 }}">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Low Stock Items</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+    </div>
+    <span class="kpi-value">{{ low_stock_count }}</span>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Categories</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+    </div>
+    <span class="kpi-value">{{ categories | length }}</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header" style="flex-wrap:wrap;gap:10px;">
+    <form method="GET" class="d-flex gap-8" style="flex-wrap:wrap;">
+      <div class="input-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input class="form-control" type="text" name="q" placeholder="Search products or SKU" value="{{ search }}" style="width:220px;">
+      </div>
+      <select class="form-control" name="category" style="width:auto;" onchange="this.form.submit()">
+        <option value="">All categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat.id }}" {{ 'selected' if category_id == cat.id }}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+      <select class="form-control" name="stock" style="width:auto;" onchange="this.form.submit()">
+        <option value="all" {{ 'selected' if stock_filter == 'all' }}>All stock</option>
+        <option value="low" {{ 'selected' if stock_filter == 'low' }}>Low stock</option>
+        <option value="out" {{ 'selected' if stock_filter == 'out' }}>Out of stock</option>
+      </select>
+      <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+    </form>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Product</th><th>SKU</th><th>Category</th><th class="num">Price</th><th class="num">Margin</th><th class="num">Stock</th><th>Adjust</th></tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td class="row-title">{{ p.name }}</td>
+          <td class="text-secondary numeric">{{ p.sku }}</td>
+          <td class="text-secondary">{{ p.category.name if p.category else '—' }}</td>
+          <td class="num numeric">{{ p.price | currency }}</td>
+          <td class="num numeric text-positive">{{ p.margin_pct }}%</td>
+          <td class="num numeric {{ 'text-danger' if p.is_low_stock }}">{{ p.stock_quantity }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('inventory.adjust_stock', product_id=p.id) }}" class="d-flex gap-8">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" name="delta" value="-1" class="btn btn-ghost btn-sm">−</button>
+              <button type="submit" name="delta" value="1" class="btn btn-ghost btn-sm">+</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7">
+          <div class="empty-state">
+            <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 8V6a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 6v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 14v-2"/></svg></div>
+            <h4>No products match your filters</h4>
+            <p>Try clearing your search or category filter.</p>
+          </div>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

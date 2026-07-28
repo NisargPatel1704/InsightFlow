@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Create account{% endblock %}
+{% block auth_content %}
+<div class="auth-screen">
+  <div class="auth-panel">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="sidebar-brand-mark">IF</div>
+        <div>
+          <div class="sidebar-brand-name">{{ app_name }}</div>
+          <div class="sidebar-brand-tag">{{ app_tagline }}</div>
+        </div>
+      </div>
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-subtitle">Set up InsightFlow for your business in under a minute.</p>
+
+      <form method="POST" action="{{ url_for('auth.register') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+          <label class="form-label" for="full_name">Full name</label>
+          <input class="form-control" type="text" id="full_name" name="full_name" placeholder="Jordan Reyes" required autofocus value="{{ form_data.full_name if form_data else '' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <input class="form-control" type="text" id="username" name="username" placeholder="jordan" required value="{{ form_data.username if form_data else '' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Work email</label>
+          <input class="form-control" type="email" id="email" name="email" placeholder="jordan@company.com" required value="{{ form_data.email if form_data else '' }}">
+        </div>
+        <div class="grid-2-even">
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <input class="form-control" type="password" id="password" name="password" placeholder="••••••••" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="confirm_password">Confirm password</label>
+            <input class="form-control" type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+          </div>
+        </div>
+        <p class="form-hint" style="margin-bottom:18px;">Minimum 8 characters. The first account created becomes the workspace admin.</p>
+        <button type="submit" class="btn btn-primary btn-block">Create account</button>
+      </form>
+
+      <p style="text-align:center;margin-top:22px;font-size:13px;color:var(--color-text-secondary);">
+        Already have an account? <a href="{{ url_for('auth.login') }}" class="link-accent">Sign in</a>
+      </p>
+    </div>
+  </div>
+  <div class="auth-side">
+    <div class="auth-side-grid"></div>
+    <div class="auth-side-content">
+      <h2>Set up once. Understand your business every day after.</h2>
+      <p>Sales, inventory, and customer data unified into a dashboard built for daily decisions.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

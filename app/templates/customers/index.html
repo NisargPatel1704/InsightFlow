@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Customers{% endblock %}
+{% block page_header_title %}Customers{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Customers</h1>
+    <p class="page-subtitle">{{ total_customers }} total, {{ active_customers }} active this period.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <form method="GET" class="input-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input class="form-control" type="text" name="q" placeholder="Search customers or company" value="{{ search }}" style="width:260px;">
+    </form>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Customer</th><th>Company</th><th>Status</th><th class="num">Orders</th><th class="num">Total Spent</th></tr>
+      </thead>
+      <tbody>
+        {% for c in customers %}
+        <tr onclick="window.location='{{ url_for('customers.detail', customer_id=c.id) }}'" style="cursor:pointer;">
+          <td>
+            <div class="row-title">{{ c.name }}</div>
+            <div class="row-meta">{{ c.email or '—' }}</div>
+          </td>
+          <td class="text-secondary">{{ c.company or '—' }}</td>
+          <td>
+            {% if c.status == 'active' %}<span class="badge badge-positive"><span class="badge-dot"></span>Active</span>
+            {% else %}<span class="badge badge-neutral"><span class="badge-dot"></span>Inactive</span>{% endif %}
+          </td>
+          <td class="num numeric">{{ c.order_count }}</td>
+          <td class="num numeric">{{ c.total_spent | currency }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">
+          <div class="empty-state">
+            <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+            <h4>No customers found</h4>
+            <p>Try a different search term.</p>
+          </div>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_header_title %}Dashboard Overview{% endblock %}
+{% block page_header_subtitle %}<div class="topbar-sub">Last updated today</div>{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Good to see you, {{ current_user.full_name.split(' ')[0] }}</h1>
+    <p class="page-subtitle">Here's how the business is performing over the last 30 days.</p>
+  </div>
+  <div class="d-flex gap-8">
+    <a href="{{ url_for('reports.sales_pdf') }}" class="btn btn-secondary btn-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      Export PDF
+    </a>
+    <a href="{{ url_for('reports.sales_excel') }}" class="btn btn-secondary btn-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+      Export Excel
+    </a>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card {{ 'positive-trend' if kpis.revenue.change >= 0 else 'negative-trend' }}">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Revenue (30d)</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+    </div>
+    <span class="kpi-value" title="{{ kpis.revenue.value | currency }} exact">{{ kpis.revenue.value | compact_currency }}</span>
+    <span class="kpi-delta {{ 'up' if kpis.revenue.change >= 0 else 'down' }}">
+      {% if kpis.revenue.change >= 0 %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>{% else %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>{% endif %}
+      {{ kpis.revenue.change | abs }}% vs prior 30d
+    </span>
+  </div>
+  <div class="kpi-card {{ 'positive-trend' if kpis.orders.change >= 0 else 'negative-trend' }}">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Orders (30d)</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1.5 5h9L18 2"/><path d="M3 7h18l-1.5 12a2 2 0 0 1-2 1.8H6.5a2 2 0 0 1-2-1.8L3 7z"/><path d="M9 11v5M15 11v5"/></svg></div>
+    </div>
+    <span class="kpi-value">{{ kpis.orders.value }}</span>
+    <span class="kpi-delta {{ 'up' if kpis.orders.change >= 0 else 'down' }}">
+      {% if kpis.orders.change >= 0 %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>{% else %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>{% endif %}
+      {{ kpis.orders.change | abs }}% vs prior 30d
+    </span>
+  </div>
+  <div class="kpi-card {{ 'positive-trend' if kpis.aov.change >= 0 else 'negative-trend' }}">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Avg. Order Value</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2h6l3 6-6 12L6 8z"/><path d="M6 8h12M12 2v6"/></svg></div>
+    </div>
+    <span class="kpi-value" title="{{ kpis.aov.value | currency }} exact">{{ kpis.aov.value | compact_currency }}</span>
+    <span class="kpi-delta {{ 'up' if kpis.aov.change >= 0 else 'down' }}">
+      {% if kpis.aov.change >= 0 %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>{% else %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>{% endif %}
+      {{ kpis.aov.change | abs }}% vs prior 30d
+    </span>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Total Customers</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    </div>
+    <span class="kpi-value">{{ kpis.customers.value }}</span>
+    <span class="kpi-delta up">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      new this period
+    </span>
+  </div>
+</div>
+
+<div class="grid-2 stack-16-parent" style="margin-bottom:24px;">
+  <div class="card">
+    <div class="card-header">
+      <h3>Revenue Trend</h3>
+      <div class="d-flex gap-8">
+        <select class="form-control" id="trendRange" style="width:auto;padding:6px 10px;font-size:12.5px;">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap">
+        <canvas id="revenueTrendChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Revenue by Category</h3>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap short">
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid-2" style="margin-bottom:24px;">
+  <div class="card">
+    <div class="card-header">
+      <h3>Recent Invoices</h3>
+      <a href="{{ url_for('invoices.index') }}" class="link-accent">View all</a>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Invoice</th><th>Customer</th><th>Date</th><th>Status</th><th class="num">Total</th></tr>
+        </thead>
+        <tbody>
+          {% for sale in recent_sales %}
+          <tr onclick="window.location='{{ url_for('invoices.detail', sale_id=sale.id) }}'" style="cursor:pointer;">
+            <td class="row-title numeric">{{ sale.invoice_number }}</td>
+            <td>{{ sale.customer.name if sale.customer else '—' }}</td>
+            <td class="text-secondary">{{ sale.sale_date.strftime('%b %d, %Y') }}</td>
+            <td>
+              {% if sale.status == 'paid' %}<span class="badge badge-positive"><span class="badge-dot"></span>Paid</span>
+              {% elif sale.status == 'pending' %}<span class="badge badge-warning"><span class="badge-dot"></span>Pending</span>
+              {% elif sale.status == 'overdue' %}<span class="badge badge-danger"><span class="badge-dot"></span>Overdue</span>
+              {% else %}<span class="badge badge-neutral"><span class="badge-dot"></span>{{ sale.status.title() }}</span>{% endif %}
+            </td>
+            <td class="num numeric">{{ sale.total | currency }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5"><div class="empty-state empty-state-inline"><div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><p>No invoices yet.</p></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Top Products</h3>
+    </div>
+    <div class="card-body stack-16">
+      {% for name, units, revenue in top_products %}
+      <div>
+        <div class="d-flex justify-between align-center" style="margin-bottom:6px;">
+          <span style="font-size:13px;font-weight:600;">{{ name }}</span>
+          <span class="numeric" style="font-size:12.5px;color:var(--color-text-secondary);">{{ revenue | currency }}</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: {{ (100 * revenue / top_products[0][2]) if top_products else 0 }}%;"></div>
+        </div>
+      </div>
+      {% else %}
+      <div class="empty-state empty-state-inline"><div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></div><p>No sales recorded yet.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% if low_stock %}
+<div class="card">
+  <div class="card-header">
+    <h3>Low Stock Alerts</h3>
+    <a href="{{ url_for('inventory.index', stock='low') }}" class="link-accent">Manage inventory</a>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Product</th><th>SKU</th><th class="num">In Stock</th><th class="num">Reorder Level</th></tr></thead>
+      <tbody>
+        {% for product in low_stock %}
+        <tr>
+          <td class="row-title">{{ product.name }}</td>
+          <td class="text-secondary numeric">{{ product.sku }}</td>
+          <td class="num numeric text-danger">{{ product.stock_quantity }}</td>
+          <td class="num numeric">{{ product.reorder_level }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const trendLabels = {{ trend_labels | tojson }};
+const trendValues = {{ trend_values | tojson }};
+const categoryLabels = {{ category_labels | tojson }};
+const categoryValues = {{ category_values | tojson }};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const colors = window.InsightFlowCharts.getColors();
+  const grid = window.InsightFlowCharts.baseGridOptions(colors);
+
+  const trendCtx = document.getElementById('revenueTrendChart');
+  const gradient = trendCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
+  gradient.addColorStop(0, colors.accentSoft);
+  gradient.addColorStop(1, 'rgba(124,58,237,0)');
+
+  const trendChart = new Chart(trendCtx, {
+    type: 'line',
+    data: {
+      labels: trendLabels,
+      datasets: [{
+        label: 'Revenue',
+        data: trendValues,
+        borderColor: colors.accent,
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.35,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ' $' + ctx.parsed.y.toLocaleString() } } },
+      scales: {
+        x: { ...grid, ticks: { ...grid.ticks, maxTicksLimit: 8 } },
+        y: { ...grid, ticks: { ...grid.ticks, callback: (v) => '$' + v.toLocaleString() } },
+      }
+    }
+  });
+
+  const trendWrap = trendCtx.closest('.chart-wrap');
+  const trendSelect = document.getElementById('trendRange');
+  trendSelect.addEventListener('change', async (e) => {
+    const days = e.target.value;
+    trendWrap.style.opacity = '0.4';
+    trendSelect.disabled = true;
+    try {
+      const res = await fetch(`/api/revenue-trend?days=${days}`);
+      const data = await res.json();
+      trendChart.data.labels = data.labels;
+      trendChart.data.datasets[0].data = data.values;
+      trendChart.update();
+    } catch (err) {
+      console.warn('Could not refresh revenue trend.', err);
+    } finally {
+      trendWrap.style.opacity = '1';
+      trendSelect.disabled = false;
+    }
+  });
+
+  new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+      labels: categoryLabels,
+      datasets: [{
+        data: categoryValues,
+        backgroundColor: [colors.accent, colors.info, colors.positive, colors.warning, colors.danger, '#14B8A6'],
+        borderColor: colors.surface,
+        borderWidth: 2,
+        hoverOffset: 8,
+        hoverBorderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '60%',
+      layout: { padding: 4 },
+      plugins: {
+        legend: { position: 'bottom', labels: { color: colors.textSecondary, font: { size: 11, family: colors.ui }, boxWidth: 8, padding: 14, usePointStyle: true, pointStyle: 'circle' } },
+        tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: $${ctx.parsed.toLocaleString()}` } }
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

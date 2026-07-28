@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Sales{% endblock %}
+{% block page_header_title %}Sales{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Sales</h1>
+    <p class="page-subtitle">Every transaction recorded across your business.</p>
+  </div>
+  <div class="d-flex gap-8">
+    <a href="{{ url_for('sales.analytics') }}" class="btn btn-secondary btn-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+      View Analytics
+    </a>
+    <a href="{{ url_for('reports.sales_excel', status=status) }}" class="btn btn-secondary btn-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+      Export
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="d-flex gap-8">
+      <a href="{{ url_for('sales.index', status='all') }}" class="badge {{ 'badge-info' if status == 'all' else 'badge-neutral' }}">All</a>
+      <a href="{{ url_for('sales.index', status='paid') }}" class="badge {{ 'badge-positive' if status == 'paid' else 'badge-neutral' }}">Paid</a>
+      <a href="{{ url_for('sales.index', status='pending') }}" class="badge {{ 'badge-warning' if status == 'pending' else 'badge-neutral' }}">Pending</a>
+      <a href="{{ url_for('sales.index', status='overdue') }}" class="badge {{ 'badge-danger' if status == 'overdue' else 'badge-neutral' }}">Overdue</a>
+    </div>
+    <span class="muted">{{ pagination.total }} total</span>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Invoice</th><th>Customer</th><th>Sales Rep</th><th>Date</th><th>Payment</th><th>Status</th><th class="num">Total</th></tr>
+      </thead>
+      <tbody>
+        {% for sale in sales %}
+        <tr onclick="window.location='{{ url_for('invoices.detail', sale_id=sale.id) }}'" style="cursor:pointer;">
+          <td class="row-title numeric">{{ sale.invoice_number }}</td>
+          <td>{{ sale.customer.name if sale.customer else '—' }}</td>
+          <td class="text-secondary">{{ sale.rep.full_name if sale.rep else '—' }}</td>
+          <td class="text-secondary">{{ sale.sale_date.strftime('%b %d, %Y') }}</td>
+          <td class="text-secondary">{{ sale.payment_method or '—' }}</td>
+          <td>
+            {% if sale.status == 'paid' %}<span class="badge badge-positive"><span class="badge-dot"></span>Paid</span>
+            {% elif sale.status == 'pending' %}<span class="badge badge-warning"><span class="badge-dot"></span>Pending</span>
+            {% elif sale.status == 'overdue' %}<span class="badge badge-danger"><span class="badge-dot"></span>Overdue</span>
+            {% else %}<span class="badge badge-neutral"><span class="badge-dot"></span>{{ sale.status.title() }}</span>{% endif %}
+          </td>
+          <td class="num numeric">{{ sale.total | currency }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7">
+          <div class="empty-state">
+            <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-6 9 6v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+            <h4>No sales found</h4>
+            <p>Try a different filter or check back after your next transaction.</p>
+          </div>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if pagination.pages > 1 %}
+<div class="d-flex justify-between align-center" style="margin-top:16px;">
+  <span class="text-secondary" style="font-size:12.5px;">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+  <div class="d-flex gap-8">
+    {% if pagination.has_prev %}
+    <a href="{{ url_for('sales.index', status=status, page=pagination.prev_num) }}" class="btn btn-secondary btn-sm">Previous</a>
+    {% endif %}
+    {% if pagination.has_next %}
+    <a href="{{ url_for('sales.index', status=status, page=pagination.next_num) }}" class="btn btn-secondary btn-sm">Next</a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

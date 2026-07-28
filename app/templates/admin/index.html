@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+{% block page_header_title %}Admin Panel{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Admin Panel</h1>
+    <p class="page-subtitle">Manage users, roles, and workspace-wide settings.</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Users</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    </div>
+    <span class="kpi-value">{{ stats.total_users }}</span>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Products</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V6a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 6v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 14v-2"/><path d="M3.27 6.96L12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></svg></div>
+    </div>
+    <span class="kpi-value">{{ stats.total_products }}</span>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Customers</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    </div>
+    <span class="kpi-value">{{ stats.total_customers }}</span>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Sales Recorded</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></div>
+    </div>
+    <span class="kpi-value">{{ stats.total_sales }}</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><h3>Users</h3></div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th></th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>
+            <div class="d-flex align-center gap-8">
+              <div class="avatar-badge">{{ u.initials }}</div>
+              <span class="row-title">{{ u.full_name }}</span>
+            </div>
+          </td>
+          <td class="text-secondary">{{ u.email }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('admin.update_role', user_id=u.id) }}" class="d-flex gap-8">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <select name="role" class="form-control" style="width:auto;padding:6px 10px;font-size:12.5px;" onchange="this.form.submit()" {{ 'disabled' if u.id == current_user.id }}>
+                <option value="admin" {{ 'selected' if u.role == 'admin' }}>Admin</option>
+                <option value="manager" {{ 'selected' if u.role == 'manager' }}>Manager</option>
+                <option value="staff" {{ 'selected' if u.role == 'staff' }}>Staff</option>
+              </select>
+            </form>
+          </td>
+          <td>
+            {% if u.is_active_account %}<span class="badge badge-positive"><span class="badge-dot"></span>Active</span>
+            {% else %}<span class="badge badge-neutral"><span class="badge-dot"></span>Deactivated</span>{% endif %}
+          </td>
+          <td class="text-secondary">{{ u.last_login.strftime('%b %d, %Y') if u.last_login else 'Never' }}</td>
+          <td>
+            {% if u.id != current_user.id %}
+            <form method="POST" action="{{ url_for('admin.toggle_active', user_id=u.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-ghost btn-sm">{{ 'Deactivate' if u.is_active_account else 'Activate' }}</button>
+            </form>
+            {% else %}
+            <span class="text-muted" style="font-size:12px;">You</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

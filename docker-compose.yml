@@ -1,0 +1,22 @@
+services:
+  insightflow:
+    build: .
+    container_name: insightflow
+    ports:
+      - "8000:8000"
+    environment:
+      FLASK_ENV: production
+      SECRET_KEY: ${SECRET_KEY:-change-this-to-a-long-random-string-in-production}
+      DATABASE_URL: sqlite:////app/instance/insightflow.db
+    volumes:
+      - insightflow_data:/app/instance
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/login')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  insightflow_data:

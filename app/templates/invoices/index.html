@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Invoices{% endblock %}
+{% block page_header_title %}Invoices{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Invoices</h1>
+    <p class="page-subtitle">Summary of billing across all customers.</p>
+  </div>
+</div>
+
+<div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr);">
+  <div class="kpi-card positive-trend">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Paid</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+    </div>
+    <span class="kpi-value">{{ summary.paid }}</span>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Pending</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+    </div>
+    <span class="kpi-value">{{ summary.pending }}</span>
+  </div>
+  <div class="kpi-card negative-trend">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Overdue</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+    </div>
+    <span class="kpi-value">{{ summary.overdue }}</span>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-card-top">
+      <div class="kpi-label">Outstanding Amount</div>
+      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+    </div>
+    <span class="kpi-value" title="{{ summary.total_outstanding | currency }} exact">{{ summary.total_outstanding | compact_currency }}</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="d-flex gap-8">
+      <a href="{{ url_for('invoices.index', status='all') }}" class="badge {{ 'badge-info' if status == 'all' else 'badge-neutral' }}">All</a>
+      <a href="{{ url_for('invoices.index', status='paid') }}" class="badge {{ 'badge-positive' if status == 'paid' else 'badge-neutral' }}">Paid</a>
+      <a href="{{ url_for('invoices.index', status='pending') }}" class="badge {{ 'badge-warning' if status == 'pending' else 'badge-neutral' }}">Pending</a>
+      <a href="{{ url_for('invoices.index', status='overdue') }}" class="badge {{ 'badge-danger' if status == 'overdue' else 'badge-neutral' }}">Overdue</a>
+    </div>
+    <span class="muted">{{ pagination.total }} total</span>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Invoice</th><th>Customer</th><th>Issued</th><th>Due</th><th>Status</th><th class="num">Total</th><th></th></tr></thead>
+      <tbody>
+        {% for inv in invoices %}
+        <tr>
+          <td class="row-title numeric">{{ inv.invoice_number }}</td>
+          <td>{{ inv.customer.name if inv.customer else '—' }}</td>
+          <td class="text-secondary">{{ inv.sale_date.strftime('%b %d, %Y') }}</td>
+          <td class="text-secondary">{{ inv.due_date.strftime('%b %d, %Y') if inv.due_date else '—' }}</td>
+          <td>
+            {% if inv.status == 'paid' %}<span class="badge badge-positive"><span class="badge-dot"></span>Paid</span>
+            {% elif inv.status == 'pending' %}<span class="badge badge-warning"><span class="badge-dot"></span>Pending</span>
+            {% elif inv.status == 'overdue' %}<span class="badge badge-danger"><span class="badge-dot"></span>Overdue</span>
+            {% else %}<span class="badge badge-neutral"><span class="badge-dot"></span>{{ inv.status.title() }}</span>{% endif %}
+          </td>
+          <td class="num numeric">{{ inv.total | currency }}</td>
+          <td><a href="{{ url_for('invoices.detail', sale_id=inv.id) }}" class="btn btn-ghost btn-sm">View</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7"><div class="empty-state empty-state-inline"><div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><p>No invoices match this filter.</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if pagination.pages > 1 %}
+<div class="d-flex justify-between align-center" style="margin-top:16px;">
+  <span class="text-secondary" style="font-size:12.5px;">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+  <div class="d-flex gap-8">
+    {% if pagination.has_prev %}
+    <a href="{{ url_for('invoices.index', status=status, page=pagination.prev_num) }}" class="btn btn-secondary btn-sm">Previous</a>
+    {% endif %}
+    {% if pagination.has_next %}
+    <a href="{{ url_for('invoices.index', status=status, page=pagination.next_num) }}" class="btn btn-secondary btn-sm">Next</a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

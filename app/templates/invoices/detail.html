@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Invoice {{ invoice.invoice_number }}{% endblock %}
+{% block page_header_title %}Invoice {{ invoice.invoice_number }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Invoice {{ invoice.invoice_number }}</h1>
+    <p class="page-subtitle">Issued {{ invoice.sale_date.strftime('%B %d, %Y') }}</p>
+  </div>
+  <div class="d-flex gap-8">
+    <a href="{{ url_for('invoices.index') }}" class="btn btn-secondary btn-sm">← Back</a>
+    <a href="{{ url_for('reports.invoice_pdf', sale_id=invoice.id) }}" class="btn btn-primary btn-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      Download PDF
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="grid-2-even" style="margin-bottom:24px;">
+      <div>
+        <div class="row-meta" style="margin-bottom:4px;">BILL TO</div>
+        <div style="font-weight:600;font-size:15px;">{{ invoice.customer.name if invoice.customer else '—' }}</div>
+        <div class="text-secondary">{{ invoice.customer.company if invoice.customer else '' }}</div>
+        <div class="text-secondary">{{ invoice.customer.email if invoice.customer else '' }}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="row-meta" style="margin-bottom:4px;">STATUS</div>
+        {% if invoice.status == 'paid' %}<span class="badge badge-positive"><span class="badge-dot"></span>Paid</span>
+        {% elif invoice.status == 'pending' %}<span class="badge badge-warning"><span class="badge-dot"></span>Pending</span>
+        {% elif invoice.status == 'overdue' %}<span class="badge badge-danger"><span class="badge-dot"></span>Overdue</span>
+        {% else %}<span class="badge badge-neutral"><span class="badge-dot"></span>{{ invoice.status.title() }}</span>{% endif %}
+        <div class="text-secondary" style="margin-top:8px;font-size:12.5px;">Due {{ invoice.due_date.strftime('%b %d, %Y') if invoice.due_date else '—' }}</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Product</th><th class="num">Qty</th><th class="num">Unit Price</th><th class="num">Total</th></tr></thead>
+        <tbody>
+          {% for item in invoice.items %}
+          <tr>
+            <td class="row-title">{{ item.product.name if item.product else '—' }}</td>
+            <td class="num numeric">{{ item.quantity }}</td>
+            <td class="num numeric">{{ item.unit_price | currency }}</td>
+            <td class="num numeric">{{ item.line_total | currency }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="max-width:280px;margin-left:auto;margin-top:20px;" class="stack-16">
+      <div class="d-flex justify-between"><span class="text-secondary">Subtotal</span><span class="numeric">{{ invoice.subtotal | currency }}</span></div>
+      <div class="d-flex justify-between"><span class="text-secondary">Tax</span><span class="numeric">{{ invoice.tax | currency }}</span></div>
+      <div class="d-flex justify-between" style="font-weight:700;font-size:16px;border-top:1px solid var(--color-border);padding-top:12px;"><span>Total</span><span class="numeric">{{ invoice.total | currency }}</span></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
