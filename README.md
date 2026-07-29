@@ -2,9 +2,25 @@
 
 A modern, full-stack analytics platform for small and mid-sized businesses. Track revenue, inventory, customers, and invoices in one clean, responsive dashboard — built to look and feel like a real commercial SaaS product.
 
-![Status](https://img.shields.io/badge/status-demo--ready-7C3AED) ![Version](https://img.shields.io/badge/version-1.1-7C3AED) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![Flask](https://img.shields.io/badge/flask-3.0-black)
+![Status](https://img.shields.io/badge/status-demo--ready-7C3AED)
+![Version](https://img.shields.io/badge/version-1.1-7C3AED)
+![Python](https://img.shields.io/badge/python-3.10+-blue)
+![Flask](https://img.shields.io/badge/flask-3.0-black)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-7C3AED?style=for-the-badge&logo=render&logoColor=white)](https://insightflow-m1go.onrender.com)
 
-See [RELEASE_NOTES.md](RELEASE_NOTES.md) for what's new in v1.1 (a UI/UX polish pass — no functional changes).
+## 🌐 Live Demo
+
+**🚀 Live Application:** https://insightflow-m1go.onrender.com
+
+### Demo Credentials
+
+| Username | Password |
+|----------|----------|
+| `admin` | `Admin123!` |
+
+> **Note:** The application may take 30–60 seconds to wake up if it has been idle, as it is hosted on Render's free tier.
+
+See [RELEASE_NOTES.md](RELEASE_NOTES.md) for what's new in **v1.1** (a UI/UX polish pass — no functional changes).
 
 ---
 
