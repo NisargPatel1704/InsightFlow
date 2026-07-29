@@ -190,7 +190,89 @@ The **first account ever registered** automatically becomes an Admin.
 
 ## 📸 Screenshots
 
-Run the app locally and capture screenshots of the Dashboard, Sales Analytics, Inventory, and Invoice detail pages to include here — they're the strongest selling point for a Fiverr gig listing or portfolio site.
+Explore InsightFlow's core modules through the screenshots below. Each section highlights a key area of the application, from authentication to business analytics and administration.
+
+> **Note:** All screenshots are shown in the Dark theme. Every module is also fully available in Light mode via the global theme toggle, with the selected theme persisted per user.
+
+---
+
+### 🔐 Authentication
+
+![Login](assets/screenshots/login.png)
+
+*Secure authentication with session-based login, CSRF protection, and persistent user preferences.*
+
+---
+
+### 📊 Dashboard
+
+![Dashboard Overview](assets/screenshots/dashboard-overview.png)
+
+*Business overview featuring live KPI cards, revenue trends, category insights, and recent activity.*
+
+![Dashboard Analytics](assets/screenshots/dashboard-analytics.png)
+
+*Interactive analytics with dynamic 7/30/90-day revenue filtering, live API updates, and business insights.*
+
+---
+
+### 📈 Revenue Analytics
+
+![Revenue Overview](assets/screenshots/revenue-overview.png)
+
+*Revenue KPIs with monthly performance insights, payment method breakdowns, and sales analytics.*
+
+![Revenue Analytics](assets/screenshots/revenue-analytics.png)
+
+*Detailed business intelligence dashboard featuring monthly trends and sales representative leaderboards.*
+
+---
+
+### 📦 Inventory Management
+
+![Inventory Overview](assets/screenshots/inventory-overview.png)
+
+*Searchable product catalog with inventory valuation, stock indicators, and category filtering.*
+
+![Inventory Management](assets/screenshots/inventory-management.png)
+
+*Inline stock management with live quantity adjustments and inventory health monitoring.*
+
+---
+
+### 👥 Customer Management
+
+![Customers Overview](assets/screenshots/customers-overview.png)
+
+*Customer CRM with search, spending insights, and relationship overview.*
+
+![Customer Profile](assets/screenshots/customers-management.png)
+
+*Comprehensive customer profiles with company information, purchase history, and lifetime spending.*
+
+---
+
+### 🧾 Invoice Management
+
+![Invoice Overview](assets/screenshots/invoice-overview.png)
+
+*Invoice dashboard summarizing paid, pending, and overdue invoices with outstanding balances.*
+
+![Invoice List](assets/screenshots/invoice-list.png)
+
+*Centralized invoice management with filtering, status tracking, and quick access to invoice records.*
+
+![Invoice Details](assets/screenshots/invoice-details.png)
+
+*Detailed invoice view with itemized products, customer information, and one-click PDF export.*
+
+---
+
+### ⚙️ Administration
+
+![Admin Panel](assets/screenshots/admin-panel.png)
+
+*Role-based administration panel for user management, permissions, account status, and workspace statistics.*
 
 ---
 
